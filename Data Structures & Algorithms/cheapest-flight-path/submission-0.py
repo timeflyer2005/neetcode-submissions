@@ -1,0 +1,39 @@
+import heapq
+
+class Solution:
+    def findCheapestPrice(self, n, flights, src, dst, k):
+
+        graph = [[] for _ in range(n)]
+
+        for u, v, price in flights:
+            graph[u].append((v, price))
+
+        minHeap = [(0, src, 0)]
+        # (cost, airport, flights_used)
+
+        best = [[float("inf")] * (k + 2) for _ in range(n)]
+        best[src][0] = 0
+
+        while minHeap:
+            cost, node, flights_used = heapq.heappop(minHeap)
+
+            if node == dst:
+                return cost
+
+            if flights_used == k + 1:
+                continue
+
+            for neighbor, price in graph[node]:
+
+                newCost = cost + price
+                newFlights = flights_used + 1
+
+                if newCost < best[neighbor][newFlights]:
+                    best[neighbor][newFlights] = newCost
+
+                    heapq.heappush(
+                        minHeap,
+                        (newCost, neighbor, newFlights)
+                    )
+
+        return -1
